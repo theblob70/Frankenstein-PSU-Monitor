@@ -1,0 +1,83 @@
+FRANKENSTEIN V3 - PROBLEMS WE ACTUALLY HIT IN THE ROB 2 REBUILD
+
+Q: Why does my phone say .ino or .ps1 is 'data' / blank / unsupported?
+A: These are code files, NOT VIDEO. Inspect 00_ALL_SCRIPTS_READABLE_ON_PHONE.txt.
+   The installable source files contain full code.
+
+Q: Why is START_HERE.txt not visible?
+A: Scroll DOWN the extracted folder; it's under RP_PSU_LIVE.ps1.
+
+Q: Why can't I see 'Extract All' when right-clicking?
+A: Make sure you're on the ZIP archive (WinRAR icon), not a yellow folder.
+   For WinRAR use 'Extract to <ZIP-name>\'. Use the extracted yellow folder.
+
+Q: Why does the second .ino have 'Select Board' again?
+A: Each separate Arduino IDE window may need M5AtomS3 and correct COM port set.
+   Choose M5AtomS3 (NOT M5AtomS3R); Rob's example was COM10, not a universal value.
+
+Q: Arduino says INA226 NOT FOUND.
+A: Check AtomS3 USB data cable, INA226 HY2.0 connection and keyed orientation;
+   correct board and port; 115200 baud; and actual INA226 I2C address (example 0x41).
+   No bench PSU connected during this test.
+
+Q: PowerShell says file not digitally signed / cannot be loaded.
+A: Our clean V2 ZIP triggered this under LocalMachine RemoteSigned.
+   Inspect your trusted script first. In ordinary PowerShell:
+     Get-ExecutionPolicy -List
+   If RemoteSigned and this one trusted file retains internet-origin marking:
+     Unblock-File -LiteralPath "$env:USERPROFILE\RP_PSU_LIVE.ps1"
+   Then run:
+     & "$env:USERPROFILE\RP_PSU_LIVE.ps1"
+   This acts on ONE inspected file; it does not relax the system execution policy.
+   Do not bypass organisation-managed policy or unblock unknown scripts.
+   Script editing and Windows origin-marking can vary; read actual errors.
+
+Q: Why did PowerShell just show the command instead of readings?
+A: PRESS ENTER. The script shows a short startup line then sits quietly,
+   without a new PS prompt, while actively monitoring COM port.
+
+Q: Why won't PowerShell accept another command?
+A: You're trying to type in the FIRST PowerShell window, which is running
+   the monitor. Open a SECOND PowerShell window for timestamp checks.
+
+Q: COM port 'Access denied', nothing coming through or frozen data?
+A: Close Arduino Serial Monitor and other applications using the SAME COM port.
+   Only one programme can own COM10 at a time. Confirm COM number in Device Manager.
+   Avoid selecting console text with the mouse; QuickEdit can PAUSE console scripts.
+
+Q: Display file cannot be found.
+A: Script creates RP_PSU_DISPLAY.txt inside %USERPROFILE%, not Downloads, not
+   the extracted ZIP. Start PowerShell script first; check errors, port and path.
+
+Q: OBS just displays a load of CODE.
+A: You browsed to RP_PSU_LIVE.ps1 instead of RP_PSU_DISPLAY.txt.
+   .ps1 = PROGRAM; .txt = LIVE OUTPUT. OBS Text (GDI+) > Read from file.
+
+Q: Values don't change on screen while PSU disconnected. Frozen?
+A: Small noise may fluctuate, but zero is a legitimate repeated result.
+   Do not judge data flow from digits alone. Open SECOND PowerShell and run:
+     (Get-Item "$env:USERPROFILE\RP_PSU_DISPLAY.txt").LastWriteTime
+   Wait 10 seconds; UP arrow then ENTER. Time advancing = text file being rewritten.
+   The OBS UI may not visually change if file content remains identical.
+   If timestamps stop, investigate serial/console side. If they continue and
+   the actual changing content fails to show in OBS, inspect Text GDI+ file path.
+   Our initial 'freeze on recording' was NOT established as an OBS bug: a later
+   test confirmed the file advanced and OBS readings changed during recording.
+
+Q: I opened file in Notepad and its values look frozen.
+A: Notepad displays a snapshot; it doesn't automatically reload each save.
+
+Q: Why can't I find a folder exported by OBS Profile > Export?
+A: OBS profile export chooses a destination FOLDER and may create 'Untitled'
+   holding basic.ini, recordEncoder.json and streamEncoder.json. Scene Collection
+   > Export instead creates a JSON file. These are two different backups.
+
+Q: How do I select the correct original scene collection after Rob 2 test?
+A: Scene Collection menu lists collections at the bottom. An old one may be
+   called 'Untitled'. Do not Remove, Import or Reset anything by mistake.
+
+Q: Do I need to flash Arduino every normal startup?
+A: No, uploaded firmware persists. Power-cycle USB, close Arduino's Serial
+   Monitor, run the .ps1 and open OBS. Repeat firmware upload only when changing code.
+
+SAFETY: Part 1 has not tested the real PSU electrical injection path. That is Part 2.

@@ -1,0 +1,119 @@
+RP CONSOLE REPAIRS - FRANKENSTEIN V3
+COMPLETE WINDOWS BEGINNER WALKTHROUGH (ROB 2 TEST)
+03 OCTOBER 2026 | PART 1: USB-ONLY DIGITAL PROTOTYPE
+
+0. FIRST, UNPACK IT PROPERLY
+- Download THIS V3 ZIP on the Windows PC that you will actually use.
+- File Explorer > Downloads > right-click the V3 ZIP > choose 'Extract to <folder>\'
+  in WinRAR, or Extract All in Windows. Do not try to edit the ZIP directly.
+- Double-click the new yellow extracted folder. Open READ_ME_FIRST.txt.
+- If on a phone and the .ino/.ps1 displays 'data' or a blank preview, open
+  00_ALL_SCRIPTS_READABLE_ON_PHONE.txt. They are plain-text PROGRAMS, not videos.
+
+1. REQUIRED PARTS AND SOFTWARE
+- M5Stack AtomS3 (not AtomS3R)
+- M5Stack INA226 10A unit with 0.005 ohm (5 milliohm) shunt
+- Keyed HY2.0 4-pin cable: AtomS3 black GND, red 5V, yellow SDA/GPIO2,
+  white SCL/GPIO1, to the INA226 I2C module
+- USB-C DATA cable to a Windows PC
+- Arduino IDE. Install M5Stack by M5Stack board package. Board Manager URL:
+  https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
+- OBS Studio with Text (GDI+) source
+IMPORTANT: The PSU output, PS5 and electrical measurement terminal wiring remain DISCONNECTED.
+
+2. CONNECTION TEST FROM THE ZIP
+- Plug AtomS3 into USB, leave INA226 connected to its HY2.0 cable.
+- Open RP_INA226_Connection_Test > RP_INA226_Connection_Test.ino.
+- Arduino IDE may start a new window with NO board selected: select board EACH TIME.
+- Select M5AtomS3, then select the actual USB COM port (e.g. COM10 on Rob's PC).
+- Verify (tick) then Upload (right arrow).
+- Serial Monitor (magnifying glass icon), 115200 baud.
+- Expect 'INA226 FOUND!' every ~2 seconds. If not, see troubleshooting.
+- CLOSE Serial Monitor using its little X before proceeding.
+
+3. LIVE MONITOR FROM THE ZIP
+- Open RP_INA226_Live_Monitor > RP_INA226_Live_Monitor.ino.
+- Select M5AtomS3 AND the USB COM port again in this new Arduino window.
+- Verify, Upload, open Serial Monitor at 115200 baud.
+- Expect a new line approximately every second, e.g.:
+     V: 0.000  A: -0.001  W: 0.000
+  Small +/- zero offsets on an UNCONNECTED prototype are not a PSU test.
+- CLOSE Serial Monitor and close ALL Arduino IDE windows, freeing COM port.
+
+4. PREPARE THE POWERSHELL FILE
+- In the extracted folder, locate RP_PSU_LIVE.ps1 (BLUE PowerShell icon).
+- Inspect/edit it with Notepad or PowerShell ISE, if necessary. DO NOT press
+  the green Play button in PowerShell ISE. Only change '$portName = '''COM10'''' to
+  whatever COM number Device Manager shows ON YOUR PC.
+- File Explorer: use Windows+R > %USERPROFILE% > Enter to open your WINDOWS
+  user folder. COPY the actual RP_PSU_LIVE.ps1 file into that folder.
+  Do not copy a filepath string into Explorer's ADDRESS BAR by mistake.
+- If replacing your own existing script, back it up first. Do not overwrite
+  another working script until you have verified your new copy.
+
+5. RUN POWERSHELL (NOT POWERSHELL ISE)
+- Open normal Windows PowerShell, NOT 'Run as administrator'.
+- Enter EXACTLY this command and PRESS ENTER:
+     & "$env:USERPROFILE\RP_PSU_LIVE.ps1"
+- It should say: 'RP PSU monitor running on COMxx. Keep this window open.'
+- Windows may block an internet-downloaded, unsigned script with a RED message
+  if your policy is RemoteSigned. DO NOT switch off security globally.
+  Inspect the file, then see TROUBLESHOOTING_ROB2.txt for a file-only unblock.
+- This PowerShell window MUST STAY OPEN while OBS uses live readings. You can
+  minimise it. Do not click/drag SELECT TEXT in the blue console: QuickEdit mode
+  can pause a console and make data appear to freeze.
+
+6. FIND THE OUTPUT FILE
+- Windows+R > %USERPROFILE% > Enter, then find RP_PSU_DISPLAY.txt.
+- It is a plain white TEXT DOCUMENT, separate from the blue .ps1 PROGRAM.
+- PowerShell creates this .txt automatically. Do NOT point OBS to .ps1,
+  03_POWERSHELL_READABLE.txt, or the original ZIP.
+- You can open the display .txt in Notepad to check values, but Notepad does
+  not continuously refresh an already-open file. OBS reads it directly.
+
+7. OBS SETUP (MAKE A SAFE TEST COLLECTION FIRST)
+- If you already use OBS, first Scene Collection > Export (save a JSON backup),
+  and Profile > Export (choose a FOLDER; profile contains basic.ini and JSONs).
+- Scene Collection > New > e.g. ROB 2 - FRANKENSTEIN TEST.
+- In Scenes panel click + and name a scene RP PSU DASHBOARD.
+- Click SOURCES tab > + > Text (GDI+). On OBS 32, click the large dashed
+  '+ Add a new Text (GDI+)' rectangle. Name it RP PSU LIVE READINGS.
+- In source Properties, tick 'Read from file' > Browse > navigate to Windows
+  user folder > select RP_PSU_DISPLAY.txt > Open > OK.
+- Font: make sufficiently large and white on dark canvas. Add separate optional
+  heading source(s) for RP CONSOLE REPAIRS / BENCH PSU LIVE MONITOR.
+- Drag INSIDE red selection box to move text. Dragging its corner handles
+  changes size and can create the accidental thin 'skyscraper' effect.
+- Lock source(s) using the padlock once arranged.
+- OBS's Scene Collection menu lets you switch back to your original collection;
+  an original may be called 'Untitled' if it was never named.
+
+8. PROVE DATA CONTINUES TO UPDATE
+- A reading at 0.000 may stay the SAME for seconds because no load is connected.
+  Check the actual file update time in a SECOND ordinary PowerShell window:
+     (Get-Item "$env:USERPROFILE\RP_PSU_DISPLAY.txt").LastWriteTime
+- Press Enter, wait ~10 seconds, then UP ARROW and ENTER to repeat.
+- The timestamp should advance. Run while OBS is recording if you suspect a freeze.
+- Do NOT run this in the already occupied blue monitor window.
+- Record 10-20s in OBS: Start Recording, Stop Recording, then File > Show Recordings.
+  Check all readings are legible and that the live data isn't stale.
+
+9. STOP CLEANLY
+- In running FIRST PowerShell monitor window, press Ctrl+C, wait for the PS prompt.
+  Close that window. The output should show MONITOR STOPPED rather than stale data.
+- Close OBS normally. Once serial monitor is stopped, disconnect USB if desired.
+- The uploaded firmware PERSISTS in the AtomS3; re-uploading Arduino code each
+  normal startup is NOT necessary. Ordinary startup = connect USB, close Arduino,
+  run PowerShell command, open OBS scene.
+
+10. LIMITS OF PART 1
+- The assembled electrical measurement circuit is NOT wired or calibrated here.
+- Do NOT attach a bench PSU or PS5 based solely on these instructions.
+- Module's rated 10A refers to the maker's board; the complete assembled path
+  must honour its lowest-rated connector, wire, shunt, insulation and thermal limit.
+- Estimated power = INA226 bus voltage x shunt-derived current; compare under a
+  safe resistive load against a trusted meter before relying on it clinically.
+
+Official maker's documentation:
+https://docs.m5stack.com/en/core/AtomS3
+https://docs.m5stack.com/en/unit/Unit_INA226-10A

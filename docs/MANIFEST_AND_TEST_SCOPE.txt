@@ -1,0 +1,14 @@
+V3 RELEASE VALIDATION / 03 OCTOBER 2026
+
+Executable code UNCHANGED, byte-for-byte, from independently rebuilt V2:
+RP_INA226_Connection_Test/RP_INA226_Connection_Test.ino
+  SHA256: fe194945af1f3d6c36ecf8c53942845fd3364f57e7dcb605774b79f6831da446
+RP_INA226_Live_Monitor/RP_INA226_Live_Monitor.ino
+  SHA256: 5a418f4214d8223342af35fd76bb931cb8c136983b5214388407c4eeba41c6b8
+RP_PSU_LIVE.ps1
+  SHA256: b8c17806f2b58d9cd007b94443ad656616142baaff9b3c97a4299516aa8bf6a4
+
+V3 includes updated BEGINNER GUIDE and ROB2 TROUBLESHOOTING.
+Real-hardware PSU measurement path is NOT calibrated or tested in Part 1.
+Never modify a .ps1 to be compatible with another COM port without checking your Device Manager.
+SKOOL_POST_PART1_WITH_SPACERS.txt includes actual U+2800 Braille blank spacer lines.
